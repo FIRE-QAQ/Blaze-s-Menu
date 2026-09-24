@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="烈火家今天的饭 — 43 道想学的菜">
 <meta name="theme-color" content="#211E19">
-<style>:root{color-scheme:light}html{background:#211E19}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{color-scheme:light}html{background:#F3EBDB}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>烈火家今天的饭</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@600;700;900&family=Ma+Shan+Zheng&display=swap">
 <style>
@@ -423,6 +423,16 @@ details[open] .recipe{animation:unfold .3s ease backwards}
 }
 .filler span:first-child{letter-spacing:.18em}
 .filler .fm{font-family:"Ma Shan Zheng","Noto Serif SC",serif; font-size:20px; letter-spacing:.1em; color:var(--rule-hard)}
+.fab{
+  display:none; position:fixed; right:14px; z-index:45;
+  bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  width:56px; height:56px; border-radius:50%; place-items:center;
+  background:var(--aka); color:#fff; border:2px solid rgba(255,255,255,.9);
+  box-shadow:0 4px 14px rgba(40,20,8,.45); cursor:pointer;
+  font-family:"Ma Shan Zheng","Noto Serif SC",serif; font-size:19px; letter-spacing:.04em;
+  line-height:1.05; text-align:center; padding:0;
+}
+.fab:active{background:var(--aka-deep)}
 .empty{
   margin-top:26px; border:1px solid var(--rule); background:var(--paper-hi);
   padding:54px 20px; text-align:center; font-family:"Noto Serif SC",serif;
@@ -437,13 +447,13 @@ footer a{color:var(--aka)}
 
 
 @media (max-width:760px){
-  /* iOS Safari 惯性滚动时 sticky 会短暂脱离，露出下面的内容。
-     改成 fixed 并强制独立合成层（translateZ + backface），它就不会掉队 */
-  header.board{
-    position:fixed; top:0; left:0; right:0; z-index:40;
-    transform:translateZ(0); -webkit-transform:translateZ(0);
-    will-change:transform; backface-visibility:hidden; -webkit-backface-visibility:hidden;
-  }
+  /* 手机上顶栏和分区条都不吸顶 —— 没有钉在顶边的元素，
+     就不存在"内容从它上面漏出来"这件事。iOS 的视口怎么折腾都无所谓 */
+  header.board{position:static; transform:none; will-change:auto}
+  header.board::before{display:none}
+  .sec-band{position:static}
+  html{background:var(--paper)}
+
   .board-in{padding-block:8px; gap:9px}
   .fude-logo{font-size:22px}
   .board-in h1{font-size:14px; letter-spacing:.06em}
@@ -453,17 +463,16 @@ footer a{color:var(--aka)}
   .viewtog{display:none}
 
   /* 给固定顶栏让位 */
-  .stage{padding:calc(50px + env(safe-area-inset-top,0px)) 10px calc(24px + env(safe-area-inset-bottom,0px))}
+  .stage{padding:10px 10px calc(86px + env(safe-area-inset-bottom,0px))}
 
   /* 手机只有连续上下滚动，没有翻页栏 */
   .bookbar, .hint, .pgdots{display:none}
 
   /* 分区横带吸附在顶栏下方 */
-  .sec{margin-top:18px; scroll-margin-top:calc(100px + env(safe-area-inset-top,0px))}
-  .sec-band{
-    position:sticky; top:calc(49px + env(safe-area-inset-top,0px)); z-index:15;
-    padding:8px 13px; gap:10px;
-  }
+  .sec{margin-top:18px; scroll-margin-top:10px}
+  .sec-band{padding:8px 13px; gap:10px}
+  /* 右下角的圆形目录键：只有一个小圆，跟屏幕顶边毫无关系 */
+  .fab{display:grid}
   .sec-fude{font-size:26px}
   .sec-zh{font-size:11px; letter-spacing:.24em}
 
@@ -501,6 +510,7 @@ footer a{color:var(--aka)}
 <main class="stage">
   <div id="sections"></div>
   <p class="hint" id="hint">左右滑动 · 拖拽 · 或用 ← → 翻页</p>
+  <button class="fab" id="fab" type="button" aria-label="检索与目录">目录</button>
 </main>
 
 <div class="sheet" id="sheet" hidden>
@@ -1199,6 +1209,7 @@ function closeSheet(){
   document.body.style.overflow="";
 }
 document.getElementById("open-sheet").addEventListener("click",openSheet);
+document.getElementById("fab").addEventListener("click",openSheet);
 document.getElementById("close-sheet").addEventListener("click",closeSheet);
 document.getElementById("apply").addEventListener("click",closeSheet);
 sheetEl.addEventListener("click",e=>{ if(e.target.dataset.close!==undefined) closeSheet(); });
