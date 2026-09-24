@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="烈火家今天的饭 — 43 道想学的菜">
 <meta name="theme-color" content="#211E19">
 <style>:root{color-scheme:light}html{background:#F3EBDB}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>烈火家今天的饭</title>
@@ -447,12 +446,27 @@ footer a{color:var(--aka)}
 
 
 @media (max-width:760px){
-  /* 手机上顶栏和分区条都不吸顶 —— 没有钉在顶边的元素，
-     就不存在"内容从它上面漏出来"这件事。iOS 的视口怎么折腾都无所谓 */
-  header.board{position:static; transform:none; will-change:auto}
-  header.board::before{display:none}
-  .sec-band{position:static}
-  html{background:var(--paper)}
+  /* 学 Gentle Monster：毛玻璃顶栏。后面的东西被磨成一层暗雾，
+     就算 iOS 掀开缝隙，露出来的也是糊掉的色块，看不出是菜照片 */
+  header.board{
+    position:fixed; top:0; left:0; right:0; z-index:40;
+    padding-top:env(safe-area-inset-top,0px);
+    background:
+      repeating-linear-gradient(115deg, rgba(255,255,255,.03) 0 2px, transparent 2px 7px),
+      rgba(33,30,25,.80);
+    -webkit-backdrop-filter:blur(20px) saturate(.55) brightness(.5);
+    backdrop-filter:blur(20px) saturate(.55) brightness(.5);
+    transform:translateZ(0); -webkit-transform:translateZ(0);
+    backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  }
+  /* 遮挡层也改成同样的毛玻璃，顶栏上方那一截一并糊掉 */
+  header.board::before{
+    background:rgba(33,30,25,.80);
+    -webkit-backdrop-filter:blur(20px) saturate(.55) brightness(.5);
+    backdrop-filter:blur(20px) saturate(.55) brightness(.5);
+    height:160px;
+  }
+  .fab{display:none}
 
   .board-in{padding-block:8px; gap:9px}
   .fude-logo{font-size:22px}
@@ -463,16 +477,17 @@ footer a{color:var(--aka)}
   .viewtog{display:none}
 
   /* 给固定顶栏让位 */
-  .stage{padding:10px 10px calc(86px + env(safe-area-inset-bottom,0px))}
+  .stage{padding:calc(52px + env(safe-area-inset-top,0px)) 10px calc(26px + env(safe-area-inset-bottom,0px))}
 
   /* 手机只有连续上下滚动，没有翻页栏 */
   .bookbar, .hint, .pgdots{display:none}
 
   /* 分区横带吸附在顶栏下方 */
-  .sec{margin-top:18px; scroll-margin-top:10px}
-  .sec-band{padding:8px 13px; gap:10px}
-  /* 右下角的圆形目录键：只有一个小圆，跟屏幕顶边毫无关系 */
-  .fab{display:grid}
+  .sec{margin-top:18px; scroll-margin-top:calc(100px + env(safe-area-inset-top,0px))}
+  .sec-band{
+    position:sticky; top:calc(51px + env(safe-area-inset-top,0px)); z-index:15;
+    padding:8px 13px; gap:10px;
+  }
   .sec-fude{font-size:26px}
   .sec-zh{font-size:11px; letter-spacing:.24em}
 
