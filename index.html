@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="烈火家今天的饭 — 43 道想学的菜">
 <meta name="theme-color" content="#211E19">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<style>:root{color-scheme:light}html{background:#F3EBDB}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{color-scheme:light}html{background:#211E19}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>烈火家今天的饭</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@600;700;900&family=Ma+Shan+Zheng&display=swap">
 <style>
@@ -28,6 +26,8 @@
   --kin:#9A7B2E;
 }
 *{box-sizing:border-box}
+/* 文档底色 = 顶栏色。Safari 回弹或滚动错位时露出的都是这个色，和招牌一致 */
+html{background:var(--band)}
 body{
   margin:0; color:var(--ink);
   background:
@@ -437,8 +437,13 @@ footer a{color:var(--aka)}
 
 
 @media (max-width:760px){
-  /* 顶栏吸顶到屏幕最上沿（sticky 比 fixed 在 iOS Safari 上可靠） */
-  header.board{top:0; z-index:40}
+  /* iOS Safari 惯性滚动时 sticky 会短暂脱离，露出下面的内容。
+     改成 fixed 并强制独立合成层（translateZ + backface），它就不会掉队 */
+  header.board{
+    position:fixed; top:0; left:0; right:0; z-index:40;
+    transform:translateZ(0); -webkit-transform:translateZ(0);
+    will-change:transform; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  }
   .board-in{padding-block:8px; gap:9px}
   .fude-logo{font-size:22px}
   .board-in h1{font-size:14px; letter-spacing:.06em}
@@ -448,14 +453,17 @@ footer a{color:var(--aka)}
   .viewtog{display:none}
 
   /* 给固定顶栏让位 */
-  .stage{padding:10px 10px calc(24px + env(safe-area-inset-bottom,0px))}
+  .stage{padding:calc(50px + env(safe-area-inset-top,0px)) 10px calc(24px + env(safe-area-inset-bottom,0px))}
 
   /* 手机只有连续上下滚动，没有翻页栏 */
   .bookbar, .hint, .pgdots{display:none}
 
   /* 分区横带吸附在顶栏下方 */
-  .sec{margin-top:18px; scroll-margin-top:96px}
-  .sec-band{position:sticky; top:49px; z-index:15; padding:8px 13px; gap:10px}
+  .sec{margin-top:18px; scroll-margin-top:calc(100px + env(safe-area-inset-top,0px))}
+  .sec-band{
+    position:sticky; top:calc(49px + env(safe-area-inset-top,0px)); z-index:15;
+    padding:8px 13px; gap:10px;
+  }
   .sec-fude{font-size:26px}
   .sec-zh{font-size:11px; letter-spacing:.24em}
 
