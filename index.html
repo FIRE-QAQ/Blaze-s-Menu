@@ -43,8 +43,9 @@ body::before{
 
 /* ---------- 看板 ---------- */
 header.board{
-  position:sticky; top:env(safe-area-inset-top,0px); z-index:30;
+  position:sticky; top:0; z-index:30;
   background:var(--band); border-bottom:3px double #6B5A3C;
+  padding-top:env(safe-area-inset-top,0px);
 }
 .board-in{
   max-width:1180px; margin:0 auto; padding-inline:16px; padding-block:10px;
@@ -422,11 +423,8 @@ footer a{color:var(--aka)}
 
 
 @media (max-width:760px){
-  /* 顶栏固定并盖住状态栏区域，内容不会从上面漏出来 */
-  header.board{
-    position:fixed; top:0; left:0; right:0; z-index:40;
-    padding-top:env(safe-area-inset-top,0px);
-  }
+  /* 顶栏吸顶到屏幕最上沿（sticky 比 fixed 在 iOS Safari 上可靠） */
+  header.board{top:0; z-index:40}
   .board-in{padding-block:8px; gap:9px}
   .fude-logo{font-size:22px}
   .board-in h1{font-size:14px; letter-spacing:.06em}
@@ -436,17 +434,14 @@ footer a{color:var(--aka)}
   .viewtog{display:none}
 
   /* 给固定顶栏让位 */
-  .stage{padding:calc(50px + env(safe-area-inset-top,0px)) 10px calc(24px + env(safe-area-inset-bottom,0px))}
+  .stage{padding:10px 10px calc(24px + env(safe-area-inset-bottom,0px))}
 
   /* 手机只有连续上下滚动，没有翻页栏 */
   .bookbar, .hint, .pgdots{display:none}
 
   /* 分区横带吸附在顶栏下方 */
-  .sec{margin-top:18px; scroll-margin-top:calc(96px + env(safe-area-inset-top,0px))}
-  .sec-band{
-    position:sticky; top:calc(50px + env(safe-area-inset-top,0px)); z-index:15;
-    padding:8px 13px; gap:10px;
-  }
+  .sec{margin-top:18px; scroll-margin-top:96px}
+  .sec-band{position:sticky; top:49px; z-index:15; padding:8px 13px; gap:10px}
   .sec-fude{font-size:26px}
   .sec-zh{font-size:11px; letter-spacing:.24em}
 
