@@ -285,21 +285,7 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{
 .pgnum{font-size:11.5px; color:#96835F; letter-spacing:.2em; white-space:nowrap}
 .pgnum b{color:#E6B84C; font-weight:900; font-size:14px}
 
-@media (max-width:760px){
-  .page-in{flex-direction:column; min-height:0}
-  .page-rail{
-    width:auto; flex-direction:row; align-items:center; gap:12px;
-    padding:9px 14px; border-right:none; border-bottom:3px solid var(--aka);
-    justify-content:flex-start;
-  }
-  .rail-name,.rail-desc,.rail-n{width:auto; word-break:normal; text-align:left}
-  .rail-name{font-size:28px; letter-spacing:.08em; line-height:1}
-  .rail-desc{letter-spacing:.3em}
-  .rail-n{margin-left:auto}
-  .book .photo{width:100px}
-  .book .vt h3.zh{font-size:calc(var(--nf,19px) * .86)}
-  .pgdots{display:none}
-}
+
 
 /* ---------- 密排网格 ---------- */
 .dishes{
@@ -433,16 +419,70 @@ footer{
 footer b{color:var(--ink-2); font-weight:500}
 footer a{color:var(--aka)}
 
+
 @media (max-width:760px){
-  .dishes{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
-  .dish{padding:10px}
-  .dish.hero{grid-column:span 2}
-  .dish.hero h3.zh{font-size:17px}
-  h3.zh{font-size:14px}
-  .sec-fude{font-size:26px}
+  /* 手机：照片当主角，菜名横排在下，一行两道 */
+  .book .dish{flex:1 1 148px; max-width:none; padding:10px 10px 12px}
+  .book .dish.rec, .book .dish.hero{flex:1 1 148px; max-width:none}
+  .book .head{flex-direction:column; gap:8px; align-items:stretch}
+  .book .photo{width:100%; aspect-ratio:1/1; max-height:none}
+  .book .vt{width:100%; align-self:stretch}
+  .book .vt h3.zh{
+    width:auto; max-height:none; overflow:visible; text-align:left;
+    font-size:15px; line-height:1.32; letter-spacing:.01em;
+    word-break:normal; overflow-wrap:anywhere;
+  }
+  .book .orig{margin-top:0}
+  .dishes{grid-template-columns:none}
+  .dish{flex:1 1 148px; max-width:none}
+
+  .page-in{flex-direction:column; min-height:0}
+  .page-rail{
+    width:auto; flex-direction:row; align-items:baseline; gap:11px;
+    padding:9px 13px; border-right:none; border-bottom:3px solid var(--aka);
+    justify-content:flex-start;
+  }
+  .rail-name,.rail-desc,.rail-n{width:auto; word-break:normal; text-align:left}
+  .rail-name{font-size:26px; letter-spacing:.08em; line-height:1}
+  .rail-desc{margin-block-start:0; letter-spacing:.26em}
+  .rail-n{margin-block-start:0; margin-left:auto}
+  .rail-n b{display:inline; font-size:14px}
+
+  /* 顶栏更紧凑 */
+  .board-in{padding-block:8px; gap:9px}
+  .fude-logo{font-size:22px}
+  .board-in h1{font-size:14px; letter-spacing:.06em}
   .board-in .sub{display:none}
-  .stage{padding:12px 12px 40px}
-  .page-in{min-height:calc(100vh - 208px)}
+  .tally{font-size:10.5px; margin-left:auto}
+  .iconbtn{font-size:12px; padding:6px 10px}
+
+  .stage{padding:10px 10px 0}
+  .note{font-size:11px}
+  .redline{font-size:11px}
+  .orig{font-size:10px}
+  .links{gap:5px}
+  .btn{font-size:12px; padding:7px 8px; letter-spacing:.04em}
+  .filler{min-height:34px; font-size:9.5px}
+  .filler .fm{font-size:16px}
+
+  /* 底栏：固定在视口底部，不再浮在半空也不压住菜 */
+  .bookbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:40;
+    margin:0; border-left:none; border-right:none; border-bottom:none;
+    padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+    gap:8px;
+  }
+  .pg{font-size:12px; padding:8px 6px; flex:1 1 0; text-align:center; letter-spacing:.02em}
+  .pg b{font-size:13px; margin:0 2px}
+  .pgnum{font-size:10.5px; flex:none; letter-spacing:.08em}
+  .pgdots{display:none}
+  .stage{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
+  .hint{display:none}
+
+  /* 分区条跟着顶栏吸住，滚到哪都知道在哪一区 */
+  .page-rail{
+    position:sticky; top:calc(52px + env(safe-area-inset-top,0px)); z-index:15;
+  }
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
