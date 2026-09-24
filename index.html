@@ -45,14 +45,21 @@ body::before{
 /* ---------- 看板 ---------- */
 header.board{
   position:sticky; top:0; z-index:30;
-  background:var(--band); border-bottom:3px double #6B5A3C;
+  border-bottom:3px double #6B5A3C;
   padding-top:env(safe-area-inset-top,0px);
+  /* 和分区横带同一套斜纹，两条黑带看起来是同一种材质 */
+  background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.028) 0 2px, transparent 2px 7px),
+    var(--band);
 }
-/* 顶栏上方的遮挡层：跟着顶栏一起走，不管 iOS 把顶栏顶到哪，
-   它上面 300px 一律涂成顶栏的颜色，内容绝无可能从缝里露出来 */
+/* 顶栏上方的遮挡层：跟着顶栏走，iOS 把顶栏顶到哪它就跟到哪。
+   同样的斜纹 + 向上极轻微加深，读起来是招牌本身变高，不是一块突兀的黑板 */
 header.board::before{
   content:""; position:absolute; left:0; right:0; bottom:100%;
-  height:300px; background:var(--band); pointer-events:none;
+  height:300px; pointer-events:none;
+  background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.028) 0 2px, transparent 2px 7px),
+    linear-gradient(to top, var(--band) 0, #1B1814 54px, #17140F 100%);
 }
 .board-in{
   max-width:1180px; margin:0 auto; padding-inline:16px; padding-block:10px;
