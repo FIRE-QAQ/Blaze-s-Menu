@@ -65,7 +65,8 @@ header.board{
 /* ---------- 主舞台 ---------- */
 .stage{max-width:1180px; margin:0 auto; padding:18px 16px 48px; touch-action:pan-y}
 .page.on{will-change:auto}
-.book .photo img{-webkit-user-drag:none; user-select:none}
+.photo img{-webkit-user-drag:none; user-select:none}
+.photo{-webkit-user-drag:none}
 .hint{
   text-align:center; font-size:11.5px; letter-spacing:.24em; color:var(--ink-3);
   margin:14px 0 0; transition:opacity .6s;
@@ -421,68 +422,49 @@ footer a{color:var(--aka)}
 
 
 @media (max-width:760px){
-  /* 手机：照片当主角，菜名横排在下，一行两道 */
-  .book .dish{flex:1 1 148px; max-width:none; padding:10px 10px 12px}
-  .book .dish.rec, .book .dish.hero{flex:1 1 148px; max-width:none}
-  .book .head{flex-direction:column; gap:8px; align-items:stretch}
-  .book .photo{width:100%; aspect-ratio:1/1; max-height:none}
-  .book .vt{width:100%; align-self:stretch}
-  .book .vt h3.zh{
-    width:auto; max-height:none; overflow:visible; text-align:left;
-    font-size:15px; line-height:1.32; letter-spacing:.01em;
-    word-break:normal; overflow-wrap:anywhere;
+  /* 顶栏固定并盖住状态栏区域，内容不会从上面漏出来 */
+  header.board{
+    position:fixed; top:0; left:0; right:0; z-index:40;
+    padding-top:env(safe-area-inset-top,0px);
   }
-  .book .orig{margin-top:0}
-  .dishes{grid-template-columns:none}
-  .dish{flex:1 1 148px; max-width:none}
-
-  .page-in{flex-direction:column; min-height:0}
-  .page-rail{
-    width:auto; flex-direction:row; align-items:baseline; gap:11px;
-    padding:9px 13px; border-right:none; border-bottom:3px solid var(--aka);
-    justify-content:flex-start;
-  }
-  .rail-name,.rail-desc,.rail-n{width:auto; word-break:normal; text-align:left}
-  .rail-name{font-size:26px; letter-spacing:.08em; line-height:1}
-  .rail-desc{margin-block-start:0; letter-spacing:.26em}
-  .rail-n{margin-block-start:0; margin-left:auto}
-  .rail-n b{display:inline; font-size:14px}
-
-  /* 顶栏更紧凑 */
   .board-in{padding-block:8px; gap:9px}
   .fude-logo{font-size:22px}
   .board-in h1{font-size:14px; letter-spacing:.06em}
   .board-in .sub{display:none}
   .tally{font-size:10.5px; margin-left:auto}
   .iconbtn{font-size:12px; padding:6px 10px}
+  .viewtog{display:none}
 
-  .stage{padding:10px 10px 0}
+  /* 给固定顶栏让位 */
+  .stage{padding:calc(50px + env(safe-area-inset-top,0px)) 10px calc(24px + env(safe-area-inset-bottom,0px))}
+
+  /* 手机只有连续上下滚动，没有翻页栏 */
+  .bookbar, .hint, .pgdots{display:none}
+
+  /* 分区横带吸附在顶栏下方 */
+  .sec{margin-top:18px; scroll-margin-top:calc(96px + env(safe-area-inset-top,0px))}
+  .sec-band{
+    position:sticky; top:calc(50px + env(safe-area-inset-top,0px)); z-index:15;
+    padding:8px 13px; gap:10px;
+  }
+  .sec-fude{font-size:26px}
+  .sec-zh{font-size:11px; letter-spacing:.24em}
+
+  /* 一行两道，照片当主角 */
+  .dish, .dish.rec, .dish.hero{flex:1 1 148px; max-width:none; padding:10px 10px 12px}
+  .dish.hero .photo{aspect-ratio:1/1; max-height:none}
+  .photo{max-height:none}
+  .dish.hero h3.zh{font-size:15px}
+  h3.zh{font-size:15px; line-height:1.32}
   .note{font-size:11px}
+  .dish.hero .note{font-size:11px}
   .redline{font-size:11px}
   .orig{font-size:10px}
   .links{gap:5px}
   .btn{font-size:12px; padding:7px 8px; letter-spacing:.04em}
   .filler{min-height:34px; font-size:9.5px}
   .filler .fm{font-size:16px}
-
-  /* 底栏：固定在视口底部，不再浮在半空也不压住菜 */
-  .bookbar{
-    position:fixed; left:0; right:0; bottom:0; z-index:40;
-    margin:0; border-left:none; border-right:none; border-bottom:none;
-    padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
-    gap:8px;
-  }
-  .pg{font-size:12px; padding:8px 6px; flex:1 1 0; text-align:center; letter-spacing:.02em}
-  .pg b{font-size:13px; margin:0 2px}
-  .pgnum{font-size:10.5px; flex:none; letter-spacing:.08em}
-  .pgdots{display:none}
-  .stage{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
-  .hint{display:none}
-
-  /* 分区条跟着顶栏吸住，滚到哪都知道在哪一区 */
-  .page-rail{
-    position:sticky; top:calc(52px + env(safe-area-inset-top,0px)); z-index:15;
-  }
+  .sheet-in{width:100%}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -920,7 +902,7 @@ function dishHTML(r, hero, k){
     det='<details><summary>'+(n?n:"备注")+'</summary><div class="recipe">'+body+'</div></details>';
   }
   const pic = HAS_IMG.has(r.i)
-    ? '<img src="img/'+r.i+'.jpg" alt="'+esc(r.zh)+'" loading="lazy">'+(r.url?'<span class="play">▶</span>':'')
+    ? '<img src="img/'+r.i+'.jpg" alt="'+esc(r.zh)+'" loading="lazy" draggable="false">'+(r.url?'<span class="play">▶</span>':'')
     : '<span>暂无图</span>';
   const cls='photo'+(HAS_IMG.has(r.i)?'':' noimg');
   const inner = pic
@@ -951,8 +933,11 @@ function dishHTML(r, hero, k){
   + '</article>';
 }
 
+const isPhone = ()=> window.matchMedia("(max-width:760px)").matches;
+
 function render(anim){
   if(anim===undefined) anim=true;
+  const mode = isPhone() ? "list" : view;
   let list=D.filter(passes);
   if(sortMode==="full"){ const w={full:0,part:1,link:2}; list=list.slice().sort((a,b)=>w[a.st]-w[b.st]||a.i-b.i); }
   else if(sortMode==="name"){ list=list.slice().sort((a,b)=>a.zh.localeCompare(b.zh,"zh-Hans")); }
@@ -977,7 +962,7 @@ function render(anim){
   nav.innerHTML='<span class="lab">直达</span>'+groups.map(([s,items],idx)=>
     '<a class="jump" href="#sec-'+s.id+'" data-p="'+idx+'">'+s.name+'<i>'+items.length+'</i></a>').join("");
 
-  if(view==="book"){
+  if(mode==="book"){
     pageCount=groups.length;
     if(page>=pageCount) page=0;
     host.className="book";
@@ -1095,15 +1080,17 @@ document.getElementById("clear").addEventListener("click",()=>{
 document.addEventListener("click",e=>{
   const a=e.target.closest(".jump"); if(!a) return;
   e.preventDefault();
-  if(view==="book"){ const n=+a.dataset.p; closeSheet(); goPage(n, n<page); return; }
+  if(view==="book" && !isPhone()){ const n=+a.dataset.p; closeSheet(); goPage(n, n<page); return; }
   closeSheet();
+  setTimeout(()=>{ const el=document.querySelector(a.getAttribute("href")); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); },60);
+  return;
   const el=document.querySelector(a.getAttribute("href"));
   if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
 });
 
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape"){ closeSheet(); return; }
-  if(view!=="book" || !sheetEl.hidden) return;
+  if(view!=="book" || isPhone() || !sheetEl.hidden) return;
   if(e.target.matches("input,select,textarea")) return;
   if(e.key==="ArrowRight"){ goPage(page+1,false); }
   else if(e.key==="ArrowLeft"){ goPage(page-1,true); }
@@ -1111,15 +1098,16 @@ document.addEventListener("keydown",e=>{
 
 /* ---- 翻页手势：触摸 / 鼠标拖拽 / 触控板横向滚动 ---- */
 const stageEl=document.getElementById("sections");
+stageEl.addEventListener("dragstart", e=>{ if(e.target.closest(".photo")) e.preventDefault(); });
 
-function canSwipe(){ return view==="book" && sheetEl.hidden && pageCount>1; }
+function canSwipe(){ return view==="book" && !isPhone() && sheetEl.hidden && pageCount>1; }
 function curPage(){ return stageEl.querySelector(".page.on"); }
 
 let dx=0, dy=0, sx=0, sy=0, down=false, dragging=false;
 function dragStart(e){
   if(!canSwipe()) return;
   if(e.pointerType==="mouse" && e.button!==0) return;
-  if(e.target.closest("a,button,input,select,summary,details")) return;
+  if(e.target.closest("button,input,select,summary")) return;
   down=true; dragging=false; sx=e.clientX; sy=e.clientY; dx=0; dy=0;
 }
 function dragMove(e){
@@ -1137,10 +1125,20 @@ function dragMove(e){
     p.style.transform="translateX("+(dx*(atEdge?0.18:0.34))+"px)";
   }
 }
+let swallowClick=false, swallowTimer=null;
+document.addEventListener("click",e=>{
+  if(swallowClick){ swallowClick=false; clearTimeout(swallowTimer); e.preventDefault(); e.stopPropagation(); }
+}, true);
+
 function dragEnd(){
   if(!down) return;
   const moved=dx, wasDrag=dragging;
   down=false; dragging=false;
+  if(wasDrag && Math.abs(moved)>10){
+    swallowClick=true;
+    clearTimeout(swallowTimer);
+    swallowTimer=setTimeout(()=>{ swallowClick=false; }, 350);
+  }
   const p=curPage();
   if(p){
     p.style.transition="transform .3s cubic-bezier(.22,.7,.28,1)";
@@ -1196,6 +1194,12 @@ function dropHint(){
 }
 setTimeout(dropHint,5200);
 ["click","keydown","touchstart"].forEach(ev=>document.addEventListener(ev,dropHint,{once:true,passive:true}));
+
+let wasPhone=isPhone(), rsTimer=null;
+window.addEventListener("resize",()=>{
+  clearTimeout(rsTimer);
+  rsTimer=setTimeout(()=>{ if(isPhone()!==wasPhone){ wasPhone=isPhone(); page=0; render(false); } },180);
+});
 
 buildFacets();
 document.getElementById("v-book").setAttribute("aria-pressed", view==="book");
