@@ -84,24 +84,28 @@ Blaze-s-Menu/
 ## 4. 加一道新菜的完整流程
 
 1. 读原帖（见第 6 节，X 的读取方式有坑）
-2. 下载封面图 → `img/{新序号}.jpg`，长边压到 ~800px，JPEG q80 左右。
-   整个 `img/` 目录现在约 1MB，别让单张超过 60KB
+2. 下载封面图 → `img/{新序号}.jpg`。**实际规格是宽 320px**、高按比例，
+   JPEG q80 左右，单张 20–45KB。整个 `img/` 目录现在约 1.4MB。
+   唯一的例外是 `43_card.jpg`（126KB），那是卡片图不是封面
 3. 在 `const D = [` 数组末尾加一条对象，字段照上表填
 4. 把新序号加进 `HAS_IMG` 这个 Set
 5. 如果新增了分类，同步改 `SECTIONS`；新增主料/场景，同步改 `FACETS` 的 `order`
-6. 更新 `README.md` 和 `tools/make_invite.py` 里的「43 道」计数
+6. 更新三处计数，**少改一处就会前后对不上**：`README.md`、
+   `tools/make_invite.py` 的 `DISH_COUNT`，以及 `index.html` 里
+   `<b id="shown">` 和 `<b id="shown2">` 那两个写死的数字
 7. 本地开个 `python3 -m http.server` 在手机和桌面各看一眼
 8. `git add -A && git commit && git push`
 
-**当前待办队列**（用户已发链接但还没收录，因为当时浏览器工具断线）：
+**当前待办队列**（用户已发链接但还没收录）。这三条已经逐条打开确认过内容，
+下次收录时直接用，不用再猜：
 
-| 序号 | 链接 |
+| 链接 | 实际内容 |
 |---|---|
-| 44 | https://x.com/yoyo138168/status/2103141436208341224 |
-| 45 | https://x.com/beauty_mamemame/status/2102992069463838798 |
-| 46 | https://x.com/hourui86742553/status/2103121136695529601 |
+| https://x.com/yoyo138168/status/2103141436208341224 | 电饭锅苹果清炖牛肋条（@yoyo138168，中文） |
+| https://x.com/beauty_mamemame/status/2102992069463838798 | 一锅烂炖蔬菜，卷心菜·胡萝卜·土豆切大块（日文） |
+| https://x.com/hourui86742553/status/2103121136695529601 | 麻婆豆腐——**和已有的第 3 道重复**，收之前先比对 |
 
-44 疑似是「微波炉鸡蛋沙拉」，但没确认过，以原帖为准。
+序号接着当前最大值往后排（现在是 49，所以从 50 开始）。
 
 ---
 
@@ -121,8 +125,10 @@ iOS Safari 上试过 6 种做法让顶栏贴住屏幕顶端——`viewport-fit=c
 说明遮挡/涂色/模糊这条路根本走不通。
 
 用户的原话是「宁可遮住也别漏」，最后的决定是手机端干脆什么都不固定。
-代价是滚动时看不到招牌和当前分区名。**如果要改善，做右下角那个 FAB，
-把当前分区名显示进去，不要把顶栏放回来。**
+代价是滚动时看不到招牌和当前分区名。**如果要改善，改右下角那个 FAB，
+不要把顶栏放回来。**注意 FAB 本身已经存在了（`index.html` 的 `#fab`，
+手机端 `display:grid`，点了开检索面板），按钮文字写死成「目录」。
+真正没做的只是让它随滚动显示当前分区名，是个小改，不是新组件。
 
 ### 不要用「按范围替换」的方式改 CSS
 
@@ -159,13 +165,29 @@ CJK 字形在这个模式下垂直步进为 0，整列糊成一团黑（拉丁�
 
 ## 6. 读 X 帖子的正确姿势
 
-- `WebFetch` 对 `x.com` 一律返回 `ROBOTS_DISALLOWED`，不用试
+- `WebFetch` 对 `x.com` 一律返回 `ROBOTS_DISALLOWED`，不用试。
+  但**单条帖子页在登出状态下用浏览器是能读的**，这是主力手段：
+  打开 `https://x.com/<user>/status/<id>`，用页面内 JS 取
+  `article` 的 `innerText` 和 `img[src*="/media/"]` / `video.poster` 即可
+- **搜索页和书签页必须登录**，登出会被弹到登录墙。要翻用户的书签
+  （`/i/bookmarks`，会跳到 `/i/history` 的 Bookmarks 标签）只能用
+  用户自己登录过的 Chrome。书签列表是虚拟滚动的，**一次滚一屏会漏**，
+  必须小步长（~350px）边滚边抓，否则采到的条数会少一大半
+- 配方经常不在第一条里。X 会把长推文截断，作者也常把后半段发成
+  自己的回复——**取完正文一定要看看同作者的下一条**（第 44 道柠檬黄油
+  意面就是两条拼起来的）
+- 转发号很多。遇到显示名和 handle 对不上的（比如显示「ふう@ダイエット」
+  但 handle 是 `@KowshikKV2`），多半是搬运。`orig` 应该署最早那条的作者，
+  用户书签里那条可以挂 `url2`
 - 云端容器的出口代理封了 `pbs.twimg.com`（403）。如果你在本地跑、
   网络不受限，直接下载即可；如果受限，就在浏览器页面内用 JS
   `fetch` + canvas 缩图，把 base64 带出来
 - 取封面时**优先用帖子里的 media 图片，不要用视频 poster**。
   第 42 道「蒙古牛肉」就是因为脚本优先取 poster，结果抓了回复里一张
   写着 "YUM" 的 GIF 当封面，用户一眼看出来了
+- **一个帖子页上常有不止一段视频**（引用的那条、回复里的），而且引用的
+  往往是完全不相干的另一道菜。一定要限定在第一个 `article` 里取，
+  并且下载完**自己看一眼图**再用——视频 poster 经常是开场的空锅
 - 帖子正文里如果本来就有完整材料和步骤，`st` 填 `"full"`，
   卡片上会出现红色「推」章
 
@@ -204,9 +226,12 @@ python3 tools/make_invite.py --room "2-338" --line "烈火请您用餐啦"
 ```
 
 依赖 `segno` `pillow`，验证解码用 `opencv-python`。
-需要 Noto Serif/Sans CJK 字体，脚本里写的是 Debian 的路径
-(`/usr/share/fonts/opentype/noto/...`)，macOS 上要改成本机字体路径，
-或者装 `brew install font-noto-serif-cjk-sc`。
+需要 Noto Serif/Sans CJK 字体。脚本内置的搜索路径是 Debian 的
+(`/usr/share/fonts/opentype/noto`、`/usr/local/share/fonts`)，
+**在 macOS 上基本找不到**——既没有 `~/Library/Fonts`，也没有 Apple
+Silicon 上 Homebrew 的 `/opt/homebrew/share/fonts`。不用改代码，
+每次带 `--font-dir` 指一个含 `NotoSerifCJK-*.ttc` 的目录就行，
+或者先 `brew install font-noto-serif-cjk-sc font-noto-sans-cjk-sc`。
 
 二维码固定用纠错等级 **H**，生成后务必在 1080/600/400/260/160 五个
 宽度下用 `cv2.QRCodeDetector` 解一遍再交付——微信会压缩图片，

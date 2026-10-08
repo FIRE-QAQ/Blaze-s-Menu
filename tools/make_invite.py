@@ -22,7 +22,7 @@ import segno
 from PIL import Image, ImageDraw, ImageFont
 
 URL_DEFAULT = "https://fire-qaq.github.io/Blaze-s-Menu/"
-DISH_COUNT = 43  # 加菜以后记得改这里
+DISH_COUNT = 49  # 加菜以后记得改这里
 CATEGORIES = "盖饭 米饭 面条 意面 小炒 炖菜 炸物 汤 小菜 甜点"
 
 W, H = 1080, 1560
